@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useMemo } from "react";
-import { clusterApiUrl } from "@solana/web3.js";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
@@ -14,7 +13,7 @@ type WalletContextProviderProps = {
 export default function WalletContextProvider({
   children,
 }: WalletContextProviderProps) {
-  const endpoint = useMemo(() => clusterApiUrl("devnet"), []);
+  const endpoint = useMemo(() => "http://127.0.0.1:8899", []);
   const wallets = useMemo(() => [], []);
 
   return (

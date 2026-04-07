@@ -1,0 +1,242 @@
+{
+  "address": "ELHGjVXcokM5Y4nKv6Qff4JKM5CisddnUocs459AUUca",
+  "metadata": {
+    "name": "greweco_rwa",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "initialize_plantation",
+      "discriminator": [
+        112,
+        161,
+        26,
+        241,
+        140,
+        60,
+        238,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "plantation",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  97,
+                  110,
+                  116,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "arg",
+                "path": "plantation_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "plantation_id",
+          "type": "string"
+        },
+        {
+          "name": "total_hectares",
+          "type": "u64"
+        },
+        {
+          "name": "location_hash",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "record_mrv",
+      "discriminator": [
+        20,
+        81,
+        159,
+        147,
+        156,
+        99,
+        176,
+        210
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "plantation"
+          ]
+        },
+        {
+          "name": "plantation"
+        },
+        {
+          "name": "mrv_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  114,
+                  118
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "plantation"
+              },
+              {
+                "kind": "arg",
+                "path": "timestamp"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "timestamp",
+          "type": "i64"
+        },
+        {
+          "name": "biomass_estimate",
+          "type": "u64"
+        },
+        {
+          "name": "carbon_credits_verified",
+          "type": "u64"
+        },
+        {
+          "name": "mrv_hash",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MrvRecord",
+      "discriminator": [
+        118,
+        113,
+        225,
+        41,
+        109,
+        173,
+        117,
+        82
+      ]
+    },
+    {
+      "name": "Plantation",
+      "discriminator": [
+        130,
+        60,
+        89,
+        23,
+        235,
+        220,
+        250,
+        142
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "MrvRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "plantation",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "biomass_estimate",
+            "type": "u64"
+          },
+          {
+            "name": "carbon_credits_verified",
+            "type": "u64"
+          },
+          {
+            "name": "mrv_hash",
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Plantation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "plantation_id",
+            "type": "string"
+          },
+          {
+            "name": "total_hectares",
+            "type": "u64"
+          },
+          {
+            "name": "location_hash",
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
