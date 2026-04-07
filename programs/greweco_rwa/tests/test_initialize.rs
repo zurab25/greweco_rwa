@@ -29,9 +29,14 @@ fn test_initialize() {
     svm.add_program(program_id, &bytes).unwrap();
     svm.airdrop(&payer.pubkey(), 1_000_000_000).unwrap();
 
+    let authority = payer.pubkey();
     let plantation_id = "GEO-BAT-001".to_string();
     let (plantation_pda, _bump) = Pubkey::find_program_address(
-        &[b"plantation", plantation_id.as_bytes()],
+        &[
+            b"plantation",
+            authority.as_ref(),
+            plantation_id.as_bytes(),
+        ],
         &program_id,
     );
 
@@ -44,7 +49,7 @@ fn test_initialize() {
         }
         .data(),
         greweco_rwa::accounts::InitializePlantation {
-            authority: payer.pubkey(),
+            authority,
             plantation: plantation_pda,
             system_program: system_program::ID,
         }
