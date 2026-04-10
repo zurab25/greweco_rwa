@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::{program::invoke, system_instruction};
 
 declare_id!("ELHGjVXcokM5Y4nKv6Qff4JKM5CisddnUocs459AUUca");
 
@@ -42,6 +43,46 @@ pub mod greweco_rwa {
         mrv_record.bump = ctx.bumps.mrv_record;
 
         msg!("GreWeCo MRV Data anchored successfully.");
+
+        Ok(())
+    }
+
+    pub fn sponsor_tree(
+        ctx: Context<SponsorTreeContext>,
+        tree_id: String,
+        amount_paid: u64,
+        timestamp: i64,
+    ) -> Result<()> {
+        require_keys_eq!(
+            ctx.accounts.treasury.key(),
+            ctx.accounts.plantation.authority,
+            ErrorCode::UnauthorizedTreasury
+        );
+
+        let transfer_ix = system_instruction::transfer(
+            &ctx.accounts.sponsor.key(),
+            &ctx.accounts.treasury.key(),
+            amount_paid,
+        );
+
+        invoke(
+            &transfer_ix,
+            &[
+                ctx.accounts.sponsor.to_account_info(),
+                ctx.accounts.treasury.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+            ],
+        )?;
+
+        let tree_sponsorship = &mut ctx.accounts.tree_sponsorship;
+        tree_sponsorship.plantation = ctx.accounts.plantation.key();
+        tree_sponsorship.sponsor = ctx.accounts.sponsor.key();
+        tree_sponsorship.tree_id = tree_id;
+        tree_sponsorship.amount_paid = amount_paid;
+        tree_sponsorship.timestamp = timestamp;
+        tree_sponsorship.bump = ctx.bumps.tree_sponsorship;
+
+        msg!("GreWeCo Tree successfully sponsored and minted on-chain.");
 
         Ok(())
     }
@@ -108,4 +149,45 @@ pub struct RecordMrv<'info> {
     pub mrv_record: Account<'info, MrvRecord>,
 
     pub system_program: Program<'info, System>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct TreeSponsorship {
+    pub plantation: Pubkey,
+    pub sponsor: Pubkey,
+    #[max_len(32)]
+    pub tree_id: String,
+    pub amount_paid: u64,
+    pub timestamp: i64,
+    pub bump: u8,
+}
+
+#[derive(Accounts)]
+#[instruction(tree_id: String)]
+pub struct SponsorTreeContext<'info> {
+    #[account(
+        init,
+        payer = sponsor,
+        space = 8 + TreeSponsorship::INIT_SPACE,
+        seeds = [b"tree", plantation.key().as_ref(), tree_id.as_bytes()],
+        bump
+    )]
+    pub tree_sponsorship: Account<'info, TreeSponsorship>,
+
+    pub plantation: Account<'info, Plantation>,
+
+    /// CHECK: The wallet receiving the funds.
+    pub treasury: UncheckedAccount<'info>,
+
+    #[account(mut)]
+    pub sponsor: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Treasury account does not match plantation authority.")]
+    UnauthorizedTreasury,
 }

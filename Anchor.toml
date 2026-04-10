@@ -9,7 +9,7 @@ skip-lint = false
 greweco_rwa = "ELHGjVXcokM5Y4nKv6Qff4JKM5CisddnUocs459AUUca"
 
 [provider]
-cluster = "localnet"
+cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
