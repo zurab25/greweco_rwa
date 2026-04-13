@@ -13,7 +13,7 @@ type WalletContextProviderProps = {
 export default function WalletContextProvider({
   children,
 }: WalletContextProviderProps) {
-  const endpoint = useMemo(() => "http://127.0.0.1:8899", []);
+  const endpoint = useMemo(() => "https://api.devnet.solana.com", []);
   const wallets = useMemo(() => [], []);
 
   return (
